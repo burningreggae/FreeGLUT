@@ -85,7 +85,7 @@ SFG_State fgState = { { -1, -1, GL_FALSE },  /* Position */
                       GL_FALSE,               /* JoysticksInitialised */
                       0,                      /* NumActiveJoysticks */
                       GL_FALSE,               /* InputDevsInitialised */
-                      0,                      /* MouseWheelTicks */
+					  {0,0},                  /* MouseWheelTicks */
                       1,                      /* AuxiliaryBufferNumber */
                       4,                      /* SampleNumber */
                       GL_FALSE,               /* SkipStaleMotion */
@@ -264,7 +264,8 @@ void fgDeinitialize( void )
 
     fgPlatformDeinitialiseInputDevices ();
 
-    fgState.MouseWheelTicks = 0;
+	fgState.MouseWheelTicks[0] = 0;
+    fgState.MouseWheelTicks[1] = 0;
 
     fgState.MajorVersion = 1;
     fgState.MinorVersion = 0;

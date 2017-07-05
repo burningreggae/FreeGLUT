@@ -48,6 +48,7 @@ static pGetTouchInputInfo fghGetTouchInputInfo = (pGetTouchInputInfo)0xDEADBEEF;
 static pCloseTouchInputHandle fghCloseTouchInputHandle = (pCloseTouchInputHandle)0xDEADBEEF;
 #endif
 
+
 #ifdef _WIN32_WCE
 typedef struct GXDisplayProperties GXDisplayProperties;
 typedef struct GXKeyList GXKeyList;
@@ -872,6 +873,8 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
         /* printf("WM_SIZE (ID: %i): wParam: %i, new size: %ix%i \n",window->ID,wParam,LOWORD(lParam),HIWORD(lParam)); */
 
         /* Update visibility state of the window */
+		if ( wParam == SIZE_MAXIMIZED )
+			fghPlatformOnWindowStatusNotify(window,GL_TRUE,GL_FALSE);
         if (wParam==SIZE_MINIMIZED)
             fghPlatformOnWindowStatusNotify(window,GL_FALSE,GL_FALSE);
         else if ((wParam==SIZE_RESTORED || wParam == SIZE_MAXIMIZED) && !window->State.Visible)
@@ -1275,9 +1278,12 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     }
     break;
 
+	case WM_MOUSEHWHEEL:
     case WM_MOUSEWHEEL:
     {
-        int wheel_number = 0;   /* Only one scroll wheel on windows */
+        int wheel_number = uMsg == WM_MOUSEWHEEL ? 0 : 1;   /* two scroll wheels on windows */
+		int notify_delta = WHEEL_DELTA / GLUT_WHEEL_NOTIFY_DELTA;
+
 #if defined(_WIN32_WCE)
         int modkeys = LOWORD(wParam); 
         short ticks = (short)HIWORD(wParam);
@@ -1296,10 +1302,10 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
         window = fghWindowUnderCursor(window);
 
-		fgState.MouseWheelTicks += ticks;
-        if ( abs ( fgState.MouseWheelTicks ) >= WHEEL_DELTA )
+		fgState.MouseWheelTicks[wheel_number] += ticks;
+        if ( abs ( fgState.MouseWheelTicks[wheel_number] ) >= notify_delta )
 		{
-			int direction = ( fgState.MouseWheelTicks > 0 ) ? 1 : -1;
+			int direction = ( fgState.MouseWheelTicks[wheel_number] > 0 ) ? 1 : -1;
 
             if( ! FETCH_WCB( *window, MouseWheel ) &&
                 ! FETCH_WCB( *window, Mouse ) )
@@ -1308,7 +1314,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
             fgSetWindow( window );
             fgState.Modifiers = fgPlatformGetModifiers( );
 
-            while( abs ( fgState.MouseWheelTicks ) >= WHEEL_DELTA )
+            while( abs ( fgState.MouseWheelTicks[wheel_number] ) >= notify_delta )
 			{
                 if( FETCH_WCB( *window, MouseWheel ) )
                     INVOKE_WCB( *window, MouseWheel,
@@ -1340,7 +1346,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
                     );
 				}
 
-				fgState.MouseWheelTicks -= WHEEL_DELTA * direction;
+				fgState.MouseWheelTicks[wheel_number] -= notify_delta * direction;
 			}
 
             fgState.Modifiers = INVALID_MODIFIERS;
@@ -1553,6 +1559,13 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		}
 		break;
 #endif
+
+    case WM_ACTIVATE:
+	case 0x7FF0: /*WT_PACKET 0x7FF0*/ 
+	{
+		fgTabletHandleWinEvent(window,hWnd, uMsg,wParam, lParam);
+	} break;
+
     default:
         /* Handle unhandled messages */
         lRet = DefWindowProc( hWnd, uMsg, wParam, lParam );

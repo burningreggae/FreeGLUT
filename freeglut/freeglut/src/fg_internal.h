@@ -395,7 +395,7 @@ struct tagSFG_State
     int              NumActiveJoysticks;   /* Number of active joysticks (callback defined and positive pollrate) -- if zero, don't poll joysticks */
     GLboolean        InputDevsInitialised; /* Only initialize if application calls for them */
 
-	int              MouseWheelTicks;      /* Number of ticks the mouse wheel has turned */
+	int              MouseWheelTicks[2];      /* Number of ticks the mouse wheel has turned */
 
     int              AuxiliaryBufferNumber;/* Number of auxiliary buffers */
     int              SampleNumber;         /*  Number of samples per pixel  */
@@ -1083,6 +1083,14 @@ void        fgSpaceballSetWindow( SFG_Window *window );
 
 int         fgHasSpaceball( void );
 int         fgSpaceballNumButtons( void );
+
+/* tablet device functions, defined in fg_tablet.c */
+void        fgInitialiseTablet( void );
+void        fgTabletClose( void );
+void        fgTabletlSetWindow( SFG_Window *window );
+
+int         fgHasTablet( void );
+int         fgTabletNumButtons( void );
 
 /* Setting the cursor for a given window */
 void fgSetCursor ( SFG_Window *window, int cursorID );

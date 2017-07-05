@@ -133,6 +133,9 @@ struct tagSFG_PlatformJoystick
 int  fgIsSpaceballWinEvent(HWND hwnd, WPARAM wParam, LPARAM lParam);
 void fgSpaceballHandleWinEvent(HWND hwnd, WPARAM wParam, LPARAM lParam);
 
+void fgTabletHandleWinEvent(void *window,HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+
 /* Function to be called on exit */
 extern void (__cdecl *__glutExitFunc)( int return_value );
 
