@@ -1086,7 +1086,7 @@ int         fgSpaceballNumButtons( void );
 
 /* tablet device functions, defined in fg_tablet.c */
 void        fgPlatformInitializeTablet( void );
-void        fgTabletfgPlatformTabletClose( void );
+void        fgPlatformTabletClose( void );
 
 int         fgPlatformHasTablet( void );
 int         fgPlatformTabletNumButtons( void );

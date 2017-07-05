@@ -281,10 +281,10 @@ int FGAPIENTRY glutDeviceGet( GLenum eWhat )
         return fgSpaceballNumButtons();
 
     case GLUT_HAS_TABLET:
-        return 0;
+        return fgPlatformHasTablet();
 
     case GLUT_NUM_TABLET_BUTTONS:
-        return 0;
+        return fgPlatformTabletNumButtons();
 
     case GLUT_DEVICE_IGNORE_KEY_REPEAT:
         return fgStructure.CurrentWindow ? fgStructure.CurrentWindow->State.IgnoreKeyRepeat : 0;

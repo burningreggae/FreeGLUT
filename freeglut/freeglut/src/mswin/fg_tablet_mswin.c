@@ -7,30 +7,15 @@
 #include "../fg_internal.h"
 
 
-#include "msgpack.h"
 #include "wintab.h"
 
-#define PACKETNAME FULL
-#define FULLPACKETDATA	(   PK_X | PK_Y | PK_Z | PK_BUTTONS | PK_SERIAL_NUMBER \
-	| PK_CONTEXT \
-	| PK_STATUS  \
-	| PK_TIME    \
-	| PK_CHANGED \
-	| PK_CURSOR \
-	| PK_NORMAL_PRESSURE \
-	| PK_TANGENT_PRESSURE /* the scroll wheel on wacom airbrush */\
-	| PK_ORIENTATION \
-	| PK_ROTATION \
-	)
-#define FULLPACKETMODE	0 /* ALL FIELDS ABSOLUTE */
-#define FULLPACKETFKEYS PKEXT_ABSOLUTE
-#define FULLPACKETTILT	PKEXT_ABSOLUTE
-#define FULLPACKETTOUCHSTRIP PKEXT_ABSOLUTE
-#define FULLPACKETTOUCHRING PKEXT_ABSOLUTE
-#define FULLPACKETEXPKEYS2 PKEXT_ABSOLUTE
-
+#define PACKETDATA ( PK_CURSOR | PK_NORMAL_PRESSURE | PK_BUTTONS )
+#define PACKETMODE 0
+// Tablet control extension defines
+#define PACKETEXPKEYS		PKEXT_ABSOLUTE
+#define PACKETTOUCHSTRIP	PKEXT_ABSOLUTE
+#define PACKETTOUCHRING		PKEXT_ABSOLUTE
 #include "pktdef.h"
-#undef PACKETNAME
 
 // Function pointers to Wintab functions exported from wintab32.dll. 
 typedef UINT ( API * WTINFOA ) ( UINT, UINT, LPVOID );
@@ -165,24 +150,47 @@ HCTX TabletInit(HWND hWnd)
 
 
 	// modify the digitizing region
-	sprintf(glogContext.lcName, "glut_digi%x", hWnd);
+	//sprintf(glogContext.lcName, "glut_digi%x", hWnd);
 
 	// We process WT_PACKET (CXO_MESSAGES) messages.
 	glogContext.lcOptions |= CXO_MESSAGES;
+	//glogContext.lcOptions &= ~CXO_SYSTEM;
+	{
+		UINT extIndex_TouchStrip = 0;
+		UINT extIndex_TouchRing = 0;
+		UINT extIndex_ExpKeys = 0;
+		WTPKT lTouchRing_Mask = 0;
+		WTPKT lTouchStrip_Mask = 0;
+		WTPKT lExpKeys_Mask = 0;
 
-	// What data items we want to be included in the tablet packets
-	glogContext.lcPktData = FULLPACKETDATA;
+		UINT i=0, thisTag = 0;
+		// Iterate through Wintab extension indices
+		for ( ;gpWTInfoA(WTI_EXTENSIONS+i, EXT_TAG, &thisTag); i++)
+		{
+			// looking for the specified tag
+			if (thisTag == WTX_TOUCHSTRIP) extIndex_TouchStrip = i;
+			else if (thisTag == WTX_TOUCHRING) extIndex_TouchRing = i;
+			else if (thisTag == WTX_EXPKEYS2) extIndex_ExpKeys = i;
+		}
+		gpWTInfoA(WTI_EXTENSIONS + extIndex_TouchStrip, EXT_MASK, &lTouchStrip_Mask);
+		gpWTInfoA(WTI_EXTENSIONS + extIndex_TouchRing, EXT_MASK, &lTouchRing_Mask);
+		gpWTInfoA(WTI_EXTENSIONS + extIndex_ExpKeys, EXT_MASK, &lExpKeys_Mask);
+
+		// What data items we want to be included in the tablet packets
+		glogContext.lcPktData = PACKETDATA | lTouchStrip_Mask | lTouchRing_Mask | lExpKeys_Mask;
+	}
 
 	// Which packet items should show change in value since the last
 	// packet (referred to as 'relative' data) and which items
 	// should be 'absolute'.
-	glogContext.lcPktMode = FULLPACKETMODE;
+	glogContext.lcPktMode = PACKETMODE;
 
 	// This bitfield determines whether or not this context will receive
 	// a packet when a value for each packet field changes.  This is not
 	// supported by the Intuos Wintab.  Your context will always receive
 	// packets, even if there has been no change in the data.
-	glogContext.lcMoveMask = FULLPACKETDATA;
+	glogContext.lcMoveMask = PACKETDATA;
+#if 0
 
 	// Which buttons events will be handled by this context.  lcBtnMask
 	// is a bitfield with one bit per button.
@@ -209,15 +217,18 @@ HCTX TabletInit(HWND hWnd)
 
 	// Leave the system origin and extents as received:
 	// lcSysOrgX, lcSysOrgY, lcSysExtX, lcSysExtY
-
+#endif
 	// open the region
 	// The Wintab spec says we must open the context disabled if we are 
 	// using cursor masks.  
-	hctx = gpWTOpenA( hWnd, &glogContext, FALSE );
+	hctx = gpWTOpenA( hWnd, &glogContext,TRUE );
 
 
 	return hctx;
 }
+
+PACKET pkt_last;
+PACKETEXT pktExt_last;
 
 HCTX hCtx = NULL;
 
@@ -232,6 +243,8 @@ void fgPlatformInitializeTablet(void)
 	LoadWintab();
 
 	hCtx = TabletInit(hwnd);
+	memset(&pkt_last,0x81,sizeof(pkt_last));
+	memset(&pktExt_last,0x82,sizeof(pktExt_last));
 }
 
 void fgPlatformTabletClose(void)
@@ -246,74 +259,64 @@ void fgPlatformTabletClose(void)
 
 int fgPlatformHasTablet(void)
 {
-	return hCtx != 0 ? 1 : 0;
+	if (!hCtx) fgPlatformInitializeTablet();
+	return hCtx ? 1 : 0;
 }
 
 int fgPlatformTabletNumButtons(void)
 {
-	return 0;
+	if (!hCtx) fgPlatformInitializeTablet();
+	return glogContext.lcStatus;
 }
+
 
 
 void fgTabletHandleWinEvent(SFG_Window *window,HWND hwnd, UINT uMsg,WPARAM wParam, LPARAM lParam)
 {
-	FULLPACKET pkt;
+	PACKET pkt;
+	PACKETEXT pktExt;
+
 	switch(uMsg)
 	{
 	case WT_PACKET:
 	{
 		if (!gpWTPacket || !gpWTPacket((HCTX)lParam, (UINT)wParam, &pkt) ) return;
+
+/*
 		fgWarning(
-			"pkStatus  : %x\n"
-			"pkTime    : %u\n",
-			"pkChanged : %u\n"
-			"pkSerialNumber : %u\n"
 			"pkCursor   : %u\n"
 			"pkButtons  : %x\n"
 			"pkX        : %d\n"
 			"pkY        : %d\n"
-			"pkZ        : %d\n"
-			"pkNormalPressure :%d\n"
-			"pkTangentPressure : %d\n"
-			"orAzimuth : %d\n"
-			"orAltitude : %d\n"
-			"orTwist : %d\n"
-			"roPitch : %d\n"
-			"roRoll  : %d\n"
-			"roYaw   : %d\n"
-			"pkFKeys   : %u\n"
-			"tiltX    : %d\n"
-			"tiltY    : %d\n",
-			pkt.pkStatus,
-			pkt.pkTime,
-			pkt.pkChanged,
-			pkt.pkSerialNumber,
+			"pkNormalPressure :%d\n",
 			pkt.pkCursor,
 			pkt.pkButtons,
 			pkt.pkX,
 			pkt.pkY,
-			pkt.pkZ,
-			pkt.pkNormalPressure,
-			pkt.pkTangentPressure,
-			pkt.pkOrientation.orAzimuth,
-			pkt.pkOrientation.orAltitude,
-			pkt.pkOrientation.orTwist,
-			pkt.pkRotation.roPitch,
-			pkt.pkRotation.roRoll,
-			pkt.pkRotation.roYaw,
-			pkt.pkFKeys,
-			pkt.pkTilt.tiltX,
-			pkt.pkTilt.tiltY
+			pkt.pkNormalPressure
 			);
+*/
+		if ( memcmp ( &pkt_last,&pkt,sizeof(pkt_last) ) )
+		{
+			INVOKE_WCB( *window, TabletButton, (pkt.pkCursor,pkt.pkButtons,pkt.pkNormalPressure,0) );
+			memcpy ( &pkt_last,&pkt,sizeof(pkt_last));
+		}
+	} break;
 
-			INVOKE_WCB( *window, TabletMotion, (pkt.pkX,pkt.pkY) );
+		case WT_PACKETEXT:
+		{
+			if (!gpWTPacket || !gpWTPacket((HCTX)lParam, (UINT)wParam, &pktExt) ) return;
 
+			fgWarning("Keys: %d %d %d %d\n",pktExt.pkExpKeys.nTablet, pktExt.pkExpKeys.nControl,pktExt.pkExpKeys.nLocation, pktExt.pkExpKeys.nState);
+			fgWarning("Ring: %d %d %d %d\n",pktExt.pkTouchRing.nTablet, pktExt.pkTouchRing.nControl,pktExt.pkTouchRing.nMode, pktExt.pkTouchRing.nPosition);
+			fgWarning("Strip: %d %d %d %d\n",pktExt.pkTouchStrip.nTablet, pktExt.pkTouchStrip.nControl,pktExt.pkTouchStrip.nMode, pktExt.pkTouchStrip.nPosition);
 		}
 		break;
 
+
 	case WM_ACTIVATE:
 		/* if switching in the middle, disable the region */
-		if ( 0 == hCtx ) fgPlatformInitializeTablet();
+		//if ( 0 == hCtx ) fgPlatformInitializeTablet();
 		if (hCtx && gpWTEnable) 
 		{
 			gpWTEnable(hCtx, GET_WM_ACTIVATE_STATE(wParam, lParam));

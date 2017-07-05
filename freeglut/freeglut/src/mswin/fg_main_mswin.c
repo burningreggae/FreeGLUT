@@ -792,6 +792,9 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     /* printf ( "Window %3d message %s (<%04x>) %12d %12d\n", window?window->ID:0,
              WMMsg2Str(uMsg), uMsg, wParam, lParam ); */
 
+	if (window && FETCH_WCB( *window, TabletMotion ))
+		fgTabletHandleWinEvent(window,hWnd, uMsg,wParam, lParam);
+
     switch( uMsg )
     {
     case WM_CREATE:
@@ -1559,13 +1562,6 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		}
 		break;
 #endif
-
-    case WM_ACTIVATE:
-	case 0x7FF0: /*WT_PACKET 0x7FF0*/ 
-	{
-		if (FETCH_WCB( *window, TabletMotion ))
-			fgTabletHandleWinEvent(window,hWnd, uMsg,wParam, lParam);
-	} break;
 
     default:
         /* Handle unhandled messages */

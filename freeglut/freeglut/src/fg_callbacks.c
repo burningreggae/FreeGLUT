@@ -139,8 +139,8 @@ IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG0(OverlayDisplay)
 IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG1(WindowStatus)
 IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG2(ButtonBox)
 IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG2(Dials)
-IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG2(TabletMotion)
-IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG4(TabletButton)
+//IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG2(TabletMotion)
+//IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG4(TabletButton)
 IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG2(MultiEntry)
 IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG5(MultiButton)
 IMPLEMENT_CURRENT_WINDOW_CALLBACK_FUNC_ARG3(MultiMotion)
@@ -321,5 +321,32 @@ void FGAPIENTRY glutSpaceballButtonFuncUcall( FGCBSpaceButtonUC callback, FGCBUs
 }
 
 IMPLEMENT_GLUT_CALLBACK_FUNC_ARG2_2NAME(SpaceballButton, SpaceButton)
+
+
+void FGAPIENTRY glutTabletMotionFuncUcall( FGCBTabletMotionUC callback, FGCBUserData userData )
+{
+	fgPlatformInitializeTablet();
+	SET_CURRENT_WINDOW_CALLBACK( TabletMotion );
+}
+
+void FGAPIENTRY glutTabletButtonFuncUcall( FGCBTabletButtonUC callback, FGCBUserData userData )
+{
+	fgPlatformInitializeTablet();
+	SET_CURRENT_WINDOW_CALLBACK( TabletButton );
+}
+
+void FGAPIENTRY glutTabletMotionFunc( FGCBTabletMotion callback )
+{
+	fgPlatformInitializeTablet();
+	fgStructure.CurrentWindow->CallBacks[WCB_TabletMotion] = (SFG_Proc) callback;
+	fgStructure.CurrentWindow->CallbackDatas[WCB_TabletMotion] = 0;
+}
+
+void FGAPIENTRY glutTabletButtonFunc( FGCBTabletButton callback )
+{
+	fgPlatformInitializeTablet();
+	fgStructure.CurrentWindow->CallBacks[WCB_TabletButton] = (SFG_Proc) callback;
+	fgStructure.CurrentWindow->CallbackDatas[WCB_TabletButton] = 0;
+}
 
 /*** END OF FILE ***/
