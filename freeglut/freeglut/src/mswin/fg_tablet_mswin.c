@@ -54,8 +54,6 @@ typedef BOOL ( API * WTMGRCLOSE ) ( HMGR );
 typedef HCTX ( API * WTMGRDEFCONTEXT ) ( HMGR, BOOL );
 typedef HCTX ( API * WTMGRDEFCONTEXTEX ) ( HMGR, UINT, BOOL );
 
-HINSTANCE ghWintab = NULL;
-
 WTINFOA gpWTInfoA = NULL;
 WTOPENA gpWTOpenA = NULL;
 WTGETA gpWTGetA = NULL;
@@ -79,16 +77,14 @@ WTMGRDEFCONTEXTEX gpWTMgrDefContextEx = NULL;
 
 #define GETPROCADDRESS(type, func) gp##func = (type)GetProcAddress(ghWintab, #func);
 
-BOOL LoadWintab( void )
+HINSTANCE ghWintab = NULL;
+
+void LoadWintab( void )
 {
-	//	ghWintab = LoadLibraryA(  "C:\\dev\\mainline\\Wacom\\Win\\Win32\\Debug\\Wacom_Tablet.dll" );
-	//	ghWintab = LoadLibraryA(  "C:\\dev\\mainline\\Wacom\\Win\\Win32\\Debug\\Wintab32.dll" );	
+	if ( ghWintab ) return;
 	ghWintab = LoadLibraryA( "Wintab32.dll" );
 
-	if ( !ghWintab )
-	{
-		return FALSE;
-	}
+	if ( !ghWintab ) return;
 
 	// Explicitly find the exported Wintab functions in which we are interested.
 	// We are using the ASCII, not unicode versions (where applicable).
@@ -112,8 +108,6 @@ BOOL LoadWintab( void )
 	GETPROCADDRESS( WTMGRCLOSE, WTMgrClose );
 	GETPROCADDRESS( WTMGRDEFCONTEXT, WTMgrDefContext );
 	GETPROCADDRESS( WTMGRDEFCONTEXTEX, WTMgrDefContextEx );
-
-	return TRUE;
 }
 
 void UnloadWintab( void )
@@ -225,16 +219,13 @@ HCTX TabletInit(HWND hWnd)
 	return hctx;
 }
 
-extern int tablet_initialized;
 HCTX hCtx = NULL;
 
 void fgPlatformInitializeTablet(void)
 {
 	HWND hwnd;
-	tablet_initialized = 1;
 	if (!fgStructure.CurrentWindow)
 	{
-		tablet_initialized = 0;
 		return;
 	}
 	hwnd = fgStructure.CurrentWindow->Window.Handle;
@@ -261,11 +252,6 @@ int fgPlatformHasTablet(void)
 int fgPlatformTabletNumButtons(void)
 {
 	return 0;
-}
-
-void fgPlatformTabletSetWindow(SFG_Window *window)
-{
-	return;
 }
 
 
@@ -327,6 +313,7 @@ void fgTabletHandleWinEvent(SFG_Window *window,HWND hwnd, UINT uMsg,WPARAM wPara
 
 	case WM_ACTIVATE:
 		/* if switching in the middle, disable the region */
+		if ( 0 == hCtx ) fgPlatformInitializeTablet();
 		if (hCtx && gpWTEnable) 
 		{
 			gpWTEnable(hCtx, GET_WM_ACTIVATE_STATE(wParam, lParam));

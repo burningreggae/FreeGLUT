@@ -263,6 +263,7 @@ void fgDeinitialize( void )
     }
 
     fgPlatformDeinitialiseInputDevices ();
+	fgPlatformTabletClose();
 
 	fgState.MouseWheelTicks[0] = 0;
     fgState.MouseWheelTicks[1] = 0;

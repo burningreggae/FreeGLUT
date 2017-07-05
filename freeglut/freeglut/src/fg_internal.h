@@ -1085,12 +1085,11 @@ int         fgHasSpaceball( void );
 int         fgSpaceballNumButtons( void );
 
 /* tablet device functions, defined in fg_tablet.c */
-void        fgInitialiseTablet( void );
-void        fgTabletClose( void );
-void        fgTabletlSetWindow( SFG_Window *window );
+void        fgPlatformInitializeTablet( void );
+void        fgTabletfgPlatformTabletClose( void );
 
-int         fgHasTablet( void );
-int         fgTabletNumButtons( void );
+int         fgPlatformHasTablet( void );
+int         fgPlatformTabletNumButtons( void );
 
 /* Setting the cursor for a given window */
 void fgSetCursor ( SFG_Window *window, int cursorID );

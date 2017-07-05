@@ -1563,7 +1563,8 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     case WM_ACTIVATE:
 	case 0x7FF0: /*WT_PACKET 0x7FF0*/ 
 	{
-		fgTabletHandleWinEvent(window,hWnd, uMsg,wParam, lParam);
+		if (FETCH_WCB( *window, TabletMotion ))
+			fgTabletHandleWinEvent(window,hWnd, uMsg,wParam, lParam);
 	} break;
 
     default:
