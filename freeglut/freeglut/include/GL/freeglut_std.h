@@ -355,7 +355,6 @@
 #define  GLUT_ACTIVE_SHIFT                  0x0001
 #define  GLUT_ACTIVE_CTRL                   0x0002
 #define  GLUT_ACTIVE_ALT                    0x0004
-
 /*
  * GLUT API macro definitions -- the glutSetCursor parameters
  */
