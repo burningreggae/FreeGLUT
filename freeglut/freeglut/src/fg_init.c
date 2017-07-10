@@ -71,6 +71,9 @@ SFG_State fgState = { { -1, -1, GL_FALSE },  /* Position */
                       { NULL, NULL },         /* FreeTimers */
                       NULL,                   /* IdleCallback */
                       NULL,                   /* IdleCallbackData */
+                      NULL,                   /* DragAndDropCallback */
+                      NULL,                   /* KilledCallback */
+
                       0,                      /* ActiveMenus */
                       NULL,                   /* MenuStateCallback */
                       NULL,                   /* MenuStatusCallback */
@@ -306,6 +309,8 @@ void fgDeinitialize( void )
 
     fgState.IdleCallback           = ( FGCBIdleUC )NULL;
     fgState.IdleCallbackData       = NULL;
+	fgState.DragAndDropCallback    = NULL;
+	fgState.KilledCallback         = NULL;
     fgState.MenuStateCallback      = ( FGCBMenuState )NULL;
     fgState.MenuStatusCallback     = ( FGCBMenuStatusUC )NULL;
     fgState.MenuStatusCallbackData = NULL;

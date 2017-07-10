@@ -349,4 +349,29 @@ void FGAPIENTRY glutTabletButtonFunc( FGCBTabletButton callback )
 	fgStructure.CurrentWindow->CallbackDatas[WCB_TabletButton] = 0;
 }
 
+#ifdef WIN32
+#include <ShellAPI.h>
+void acceptDragDrop()
+{
+	HWND wnd;
+	if (!fgStructure.CurrentWindow) return;
+	wnd = fgStructure.CurrentWindow->Window.Handle;
+	DragAcceptFiles(wnd, TRUE);
+}
+#else
+void acceptDragDrop() {}
+#endif
+
+void FGAPIENTRY glutDragAndDropFunction( FGCBDragAndDrop callback )
+{
+    FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutDragAndDropFunction" );
+	acceptDragDrop();
+    fgState.DragAndDropCallback = callback;
+}
+
+void FGAPIENTRY glutKilledFunction( FGCBKilled callback )
+{
+	fgState.KilledCallback = callback;
+}
+
 /*** END OF FILE ***/

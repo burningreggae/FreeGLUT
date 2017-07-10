@@ -299,6 +299,9 @@ typedef void (* FGCBMenuState       )( int );
 typedef void (* FGCBMenuStatus      )( int, int, int );
 typedef void (* FGCBMenuStatusUC    )( int, int, int, FGCBUserData );
 
+typedef void (* FGCBDragAndDrop   )( int nr, int count, char* filename,int x,int y );
+typedef void (* FGCBKilled        )( int reason );
+
 /* The callback used when creating/using menus */
 typedef void (* FGCBMenu            )( int );
 typedef void (* FGCBMenuUC          )( int, FGCBUserData );
@@ -376,6 +379,9 @@ struct tagSFG_State
 
     FGCBIdleUC       IdleCallback;         /* The global idle callback       */
     FGCBUserData     IdleCallbackData;     /* The global idle callback data  */
+
+	FGCBDragAndDrop  DragAndDropCallback;  /* Dropped a file */
+	FGCBKilled		 KilledCallback;	   /* app killed */
 
     int              ActiveMenus;          /* Num. of currently active menus */
     FGCBMenuState    MenuStateCallback;    /* Menu callbacks are global      */

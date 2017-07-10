@@ -129,7 +129,7 @@ void FGAPIENTRY glutReportErrors( void )
     GLenum error;
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutReportErrors" );
     while( ( error = glGetError() ) != GL_NO_ERROR )
-        fgWarning( "GL error: %s", fghErrorString( error ) );
+        fgWarning( "GL error: %s\n", fghErrorString( error ) );
 }
 
 /*

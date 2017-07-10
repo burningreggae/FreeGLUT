@@ -520,6 +520,9 @@ FGAPI void    FGAPIENTRY glutDialsFunc( void (* callback)( int, int ) );
 FGAPI void    FGAPIENTRY glutTabletMotionFunc( void (* callback)( int, int ) );
 FGAPI void    FGAPIENTRY glutTabletButtonFunc( void (* callback)( int, int, int, int ) );
 
+FGAPI void    FGAPIENTRY glutDragAndDropFunction( void (* callback)( int nr,int count,char* name,int x,int y ) );
+FGAPI void    FGAPIENTRY glutKilledFunction( void (* callback)( int reason ) );
+
 /*
  * State setting and retrieval functions, see fg_state.c
  */

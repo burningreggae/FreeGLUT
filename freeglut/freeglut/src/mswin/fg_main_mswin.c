@@ -1117,6 +1117,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     break;
 
     case WM_CLOSE:
+		if ( fgState.KilledCallback ) fgState.KilledCallback(WM_CLOSE);
         fgDestroyWindow ( window );
         if ( fgState.ActionOnWindowClose != GLUT_ACTION_CONTINUE_EXECUTION )
             PostQuitMessage(0);
