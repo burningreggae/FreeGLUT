@@ -109,10 +109,10 @@ void UnloadWintab( void )
 	gpWTPacket			= NULL;
 	gpWTEnable			= NULL;
 	gpWTOverlap			= NULL;
-	gpWTSave				= NULL;
+	gpWTSave			= NULL;
 	gpWTConfig			= NULL;
-	gpWTGetA				= NULL;
-	gpWTSetA				= NULL;
+	gpWTGetA			= NULL;
+	gpWTSetA			= NULL;
 	gpWTRestore			= NULL;
 	gpWTExtSet			= NULL;
 	gpWTExtGet			= NULL;
@@ -121,7 +121,7 @@ void UnloadWintab( void )
 	gpWTPacketsGet		= NULL;
 	gpWTMgrOpen			= NULL;
 	gpWTMgrClose		= NULL;
-	gpWTMgrDefContext = NULL;
+	gpWTMgrDefContext	= NULL;
 	gpWTMgrDefContextEx = NULL;
 }
 
@@ -150,7 +150,7 @@ HCTX TabletInit(HWND hWnd)
 
 
 	// modify the digitizing region
-	//sprintf(glogContext.lcName, "glut_digi%x", hWnd);
+	//sprintf(glogContext.lcName, "glut%x", hWnd);
 
 	// We process WT_PACKET (CXO_MESSAGES) messages.
 	glogContext.lcOptions |= CXO_MESSAGES;
@@ -170,6 +170,7 @@ HCTX TabletInit(HWND hWnd)
 			// looking for the specified tag
 			if (thisTag == WTX_TOUCHSTRIP) extIndex_TouchStrip = i;
 			else if (thisTag == WTX_TOUCHRING) extIndex_TouchRing = i;
+			else if (thisTag == WTX_EXPKEYS) extIndex_ExpKeys = i;
 			else if (thisTag == WTX_EXPKEYS2) extIndex_ExpKeys = i;
 		}
 		gpWTInfoA(WTI_EXTENSIONS + extIndex_TouchStrip, EXT_MASK, &lTouchStrip_Mask);
@@ -185,12 +186,14 @@ HCTX TabletInit(HWND hWnd)
 	// should be 'absolute'.
 	glogContext.lcPktMode = PACKETMODE;
 
+#if 1
+
 	// This bitfield determines whether or not this context will receive
 	// a packet when a value for each packet field changes.  This is not
 	// supported by the Intuos Wintab.  Your context will always receive
 	// packets, even if there has been no change in the data.
 	glogContext.lcMoveMask = PACKETDATA;
-#if 0
+
 
 	// Which buttons events will be handled by this context.  lcBtnMask
 	// is a bitfield with one bit per button.
