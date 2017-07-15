@@ -1116,6 +1116,25 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     }
     break;
 
+	case WM_DROPFILES:
+	{
+		HDROP drop = (HDROP)wParam;
+		POINT p;
+		unsigned int nFile;
+		unsigned int i;
+		TCHAR path[MAX_PATH];
+
+		nFile = DragQueryFile(drop, 0xFFFFFFFF, NULL, 0);
+		for ( i = 0; i < nFile; ++i )
+		{
+			DragQueryFile(drop, i, path, sizeof(path));
+			path[MAX_PATH-1]=0;
+			DragQueryPoint(drop,&p);
+			if ( fgState.DragAndDropCallback) fgState.DragAndDropCallback(i+1,nFile,path,p.x,p.y);
+		}
+		DragFinish(drop);
+	} break;
+
     case WM_CLOSE:
 		if ( fgState.KilledCallback ) fgState.KilledCallback(WM_CLOSE);
         fgDestroyWindow ( window );

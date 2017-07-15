@@ -350,7 +350,7 @@ void FGAPIENTRY glutTabletButtonFunc( FGCBTabletButton callback )
 }
 
 #ifdef WIN32
-#include <ShellAPI.h>
+//#include <ShellAPI.h>
 void acceptDragDrop()
 {
 	HWND wnd;

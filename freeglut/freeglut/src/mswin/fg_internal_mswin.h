@@ -37,6 +37,7 @@
 #   include <windows.h>
 #   include <windowsx.h>
 #   include <mmsystem.h>
+#   include <ShellAPI.h>
 /* CYGWIN does not have tchar.h, but has TEXT(x), defined in winnt.h. */
 #   ifndef __CYGWIN__
 #       include <tchar.h>
