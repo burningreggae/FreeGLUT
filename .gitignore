@@ -1,3 +1,4 @@
+freeglut/freeglut/.vs
 freeglut/freeglut/INSTALL
 freeglut/freeglut/Makefile
 freeglut/freeglut/Makefile.in
@@ -90,3 +91,4 @@ freeglut/freeglut/src/.libs
 freeglut/freeglut/src/Makefile
 freeglut/freeglut/src/Makefile.in
 freeglut/freeglut/stamp-h1
+freeglut/freeglut/.vs
