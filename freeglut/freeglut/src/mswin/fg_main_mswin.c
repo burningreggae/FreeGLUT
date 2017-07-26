@@ -773,6 +773,54 @@ SFG_Window* fghWindowUnderCursor(SFG_Window *window)
     return window;
 }
 
+typedef struct
+{
+	long long val;
+	const char *desc;
+} KEYMAP;
+
+
+//WM_NCHITTEST and MOUSEHOOKSTRUCT Mouse Position Codes
+static KEYMAP nchi[] =
+{
+	HTERROR,"HTERROR",
+	HTTRANSPARENT,"HTTRANSPARENT",
+	HTNOWHERE,"HTNOWHERE",
+	HTCLIENT,"HTCLIENT",
+	HTCAPTION,"HTCAPTION",
+	HTSYSMENU,"HTSYSMENU",
+	HTGROWBOX,"HTGROWBOX = HTSIZE",
+	HTMENU,"HTMENU",
+	HTHSCROLL,"HTHSCROLL",
+	HTVSCROLL,"HTVSCROLL",
+	HTMINBUTTON,"HTMINBUTTON = HTREDUCE",
+	HTMAXBUTTON,"HTMAXBUTTON = HTZOOM",
+	HTLEFT,"HTLEFT | HTSIZEFIRST",
+	HTRIGHT,"HTRIGHT",
+	HTTOP,"HTTOP",
+	HTTOPLEFT,"HTTOPLEFT",
+	HTTOPRIGHT,"HTTOPRIGHT",
+	HTBOTTOM,"HTBOTTOM",
+	HTBOTTOMLEFT,"HTBOTTOMLEFT",
+	HTBOTTOMRIGHT,"HTBOTTOMRIGHT = HTSIZELAST",
+	HTBORDER,"HTBORDER",
+	HTSIZEFIRST,"HTSIZEFIRST",
+	HTOBJECT,"HTOBJECT",
+	HTCLOSE,"HTCLOSE",
+	HTHELP,"HTHELP",
+	0,0
+};
+
+const char *getName(long long val, const KEYMAP *table )
+{
+	while(table->desc)
+	{
+		if(val == table->val) return table->desc;
+		table += 1;
+	}
+	return "";
+}
+
 /*
  * The window procedure for handling Win32 events
  */
@@ -1000,12 +1048,22 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
         else
             lRet = DefWindowProc( hWnd, uMsg, wParam, lParam );
         break;
-
+/*
+	case WM_NCMOUSEMOVE:
+		fgWarning ( "WM_NCMOUSEMOVE %d %d %s\n",GET_X_LPARAM(lParam),GET_Y_LPARAM(lParam), getName(wParam,nchi));
+		return 0;
+	case WM_NCHITTEST:
+		lRet = DefWindowProc( hWnd, uMsg, wParam, lParam );
+		fgWarning ( "WM_NCHITTEST %d %d %s\n",GET_X_LPARAM(lParam),GET_Y_LPARAM(lParam), getName(lRet,nchi));
+		return lRet;
+*/
     case WM_NCLBUTTONDOWN:
     case WM_NCMBUTTONDOWN:
     case WM_NCRBUTTONDOWN:
         {
             SFG_Menu *menu;
+			//fgWarning("%d %d %d\n",uMsg,GET_X_LPARAM(lParam),GET_Y_LPARAM(lParam));
+
             if (fgState.ActiveMenus && (menu = fgGetActiveMenu()))
                 /* user clicked non-client area of window while a menu is open. Close menu */
                 fgDeactivateMenu(menu->ParentWindow);
@@ -1122,13 +1180,13 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		POINT p;
 		unsigned int nFile;
 		unsigned int i;
-		TCHAR path[MAX_PATH];
-
+		static TCHAR path[32768];
+		int pathsize = sizeof(path)/sizeof(TCHAR)-1;
 		nFile = DragQueryFile(drop, 0xFFFFFFFF, NULL, 0);
 		for ( i = 0; i < nFile; ++i )
 		{
-			DragQueryFile(drop, i, path, sizeof(path));
-			path[MAX_PATH-1]=0;
+			DragQueryFile(drop, i, path, pathsize);
+			path[pathsize]=0;
 			DragQueryPoint(drop,&p);
 			if ( fgState.DragAndDropCallback) fgState.DragAndDropCallback(i+1,nFile,path,p.x,p.y);
 		}
@@ -1305,8 +1363,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     case WM_MOUSEWHEEL:
     {
         int wheel_number = uMsg == WM_MOUSEWHEEL ? 0 : 1;   /* two scroll wheels on windows */
-		int notify_delta = WHEEL_DELTA / GLUT_WHEEL_NOTIFY_DELTA;
-
+		int notify_delta = WHEEL_DELTA;
 #if defined(_WIN32_WCE)
         int modkeys = LOWORD(wParam); 
         short ticks = (short)HIWORD(wParam);
@@ -1324,6 +1381,8 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 #endif /* defined(_WIN32_WCE) */
 
         window = fghWindowUnderCursor(window);
+		
+		if (fgState.MouseWheelNotifyDelta[wheel_number]>1) notify_delta /= fgState.MouseWheelNotifyDelta[wheel_number];
 
 		fgState.MouseWheelTicks[wheel_number] += ticks;
         if ( abs ( fgState.MouseWheelTicks[wheel_number] ) >= notify_delta )
@@ -1379,7 +1438,9 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     }
     break ;
 
+	//eating alt ( disable windows menu key. getmodifier VK_ALT)
     case WM_SYSKEYDOWN:
+		if (wParam == VK_MENU ) return 1;
     case WM_KEYDOWN:
     {
         window = fghWindowUnderCursor(window);
@@ -1388,6 +1449,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     break;
 
     case WM_SYSKEYUP:
+		if (wParam == VK_MENU ) return 1;
     case WM_KEYUP:
     {
         window = fghWindowUnderCursor(window);

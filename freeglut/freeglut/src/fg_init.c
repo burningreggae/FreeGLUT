@@ -89,6 +89,7 @@ SFG_State fgState = { { -1, -1, GL_FALSE },  /* Position */
                       0,                      /* NumActiveJoysticks */
                       GL_FALSE,               /* InputDevsInitialised */
 					  {0,0},                  /* MouseWheelTicks */
+					  {1,1},                  /* MouseWheelNotifyDelta */
                       1,                      /* AuxiliaryBufferNumber */
                       4,                      /* SampleNumber */
                       GL_FALSE,               /* SkipStaleMotion */
@@ -270,6 +271,8 @@ void fgDeinitialize( void )
 
 	fgState.MouseWheelTicks[0] = 0;
     fgState.MouseWheelTicks[1] = 0;
+	fgState.MouseWheelNotifyDelta[0] = 1;
+    fgState.MouseWheelNotifyDelta[1] = 1;
 
     fgState.MajorVersion = 1;
     fgState.MinorVersion = 0;

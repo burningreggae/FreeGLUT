@@ -92,6 +92,9 @@
 
 #define  GLUT_ALLOW_NEGATIVE_WINDOW_POSITION 0x0207 /* GLUT doesn't allow negative window positions by default */
 
+#define  GLUT_MOUSEWHEEL0_NOTIFY_DELTA      0x0208 /* tweak wheel to notify on WHEEL_DELTA/delta */
+#define  GLUT_MOUSEWHEEL1_NOTIFY_DELTA      0x0209 /* tweak wheel to notify on WHEEL_DELTA/delta */
+
 /*
  * New tokens for glutInitDisplayMode.
  * Only one GLUT_AUXn bit may be used at a time.

@@ -179,7 +179,6 @@
 #define  GLUT_WHEEL0_DOWN_BUTTON            0x0004
 #define  GLUT_WHEEL1_UP_BUTTON              0x0005
 #define  GLUT_WHEEL1_DOWN_BUTTON            0x0006
-#define  GLUT_WHEEL_NOTIFY_DELTA			4
 
 #define  GLUT_DOWN                          0x0000
 #define  GLUT_UP                            0x0001

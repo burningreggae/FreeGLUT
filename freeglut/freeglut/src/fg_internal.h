@@ -399,6 +399,7 @@ struct tagSFG_State
     GLboolean        InputDevsInitialised; /* Only initialize if application calls for them */
 
 	int              MouseWheelTicks[2];      /* Number of ticks the mouse wheel has turned */
+	int              MouseWheelNotifyDelta[2]; /* WHEEL_DELTA / notify_delta */
 
     int              AuxiliaryBufferNumber;/* Number of auxiliary buffers */
     int              SampleNumber;         /*  Number of samples per pixel  */
