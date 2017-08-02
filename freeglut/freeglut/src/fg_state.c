@@ -127,10 +127,10 @@ void FGAPIENTRY glutSetOption( GLenum eWhat, int value )
       break;
 
 	case GLUT_MOUSEWHEEL0_NOTIFY_DELTA:
-		fgState.MouseWheelNotifyDelta[0] = value;
+		fgState.MouseWheelNotifyDelta[0] = value < 1 ? 1 : value;
 		break;
 	case GLUT_MOUSEWHEEL1_NOTIFY_DELTA:
-		fgState.MouseWheelNotifyDelta[1] = value;
+		fgState.MouseWheelNotifyDelta[1] = value < 1 ? 1 : value;
 		break;
     default:
         fgWarning( "glutSetOption(): missing enum handle %d", eWhat );
@@ -239,10 +239,10 @@ int FGAPIENTRY glutGet( GLenum eWhat )
         return fgState.AllowNegativeWindowPosition;
 
     case GLUT_MOUSEWHEEL0_NOTIFY_DELTA:
-		return fgState.MouseWheelTicks[0];
+		return fgState.MouseWheelNotifyDelta[0];
 
     case GLUT_MOUSEWHEEL1_NOTIFY_DELTA:
-		return fgState.MouseWheelTicks[1];
+		return fgState.MouseWheelNotifyDelta[1];
 
     default:
         return fgPlatformGlutGet ( eWhat );
