@@ -795,19 +795,18 @@ int FGAPIENTRY glutCreateMenuUcall( FGCBMenuUC callback, FGCBUserData userData )
 /* Standard glutCreateMenu */
 static void fghCreateMenuCallback( int menu, FGCBUserData userData )
 {
-    FGCBMenu* callback = (FGCBMenu*)&userData;
-    (*callback)( menu );
+    FGCBMenu callback = (FGCBMenu)userData;
+    callback( menu );
 }
 
 int FGAPIENTRY glutCreateMenu( FGCBMenu callback )
 {
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutCreateMenu" );
     if (!callback)
-    {
+	{
         return glutCreateMenuUcall( NULL, NULL );
-    }
-    FGCBMenu* reference = &callback;
-    return glutCreateMenuUcall( fghCreateMenuCallback, *((FGCBUserData*)reference) );
+	}
+    return glutCreateMenuUcall( fghCreateMenuCallback, (FGCBUserData)callback );
 }
 
 /*
