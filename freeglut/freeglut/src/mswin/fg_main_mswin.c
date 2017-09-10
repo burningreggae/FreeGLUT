@@ -564,7 +564,18 @@ void fgPlatformMainLoopPreliminaryWork ( void )
     /* no-op */
 }
 
+#if 1
+static unsigned char lControl = 0, lShift = 0, lAlt = 0,
+                     rControl = 0, rShift = 0, rAlt = 0;
 
+static int fgPlatformGetModifiers (void)
+{
+    return  ((lControl | rControl) ? GLUT_ACTIVE_CTRL : 0) |
+			((lShift | rShift) ? GLUT_ACTIVE_SHIFT : 0) |
+			((lAlt | rAlt) ? GLUT_ACTIVE_ALT : 0);
+}
+
+#else
 /*
  * Determine a GLUT modifier mask based on MS-WINDOWS system info.
  */
@@ -578,6 +589,7 @@ static int fgPlatformGetModifiers (void)
         ( ( ( GetKeyState( VK_LMENU    ) < 0 ) ||
             ( GetKeyState( VK_RMENU    ) < 0 )) ? GLUT_ACTIVE_ALT   : 0 );
 }
+#endif
 
 /* Check whether a button (VK_*BUTTON) is currently depressed. Returns
  * non-zero (not necessarily 1) if yes. */
@@ -589,8 +601,6 @@ static SHORT fgGetKeyState(int vKey)
 
 static LRESULT fghWindowProcKeyPress(SFG_Window *window, UINT uMsg, GLboolean keydown, WPARAM wParam, LPARAM lParam)
 {
-    static unsigned char lControl = 0, lShift = 0, lAlt = 0,
-                         rControl = 0, rShift = 0, rAlt = 0;
 
     int keypress = -1;
     
@@ -651,14 +661,17 @@ static LRESULT fghWindowProcKeyPress(SFG_Window *window, UINT uMsg, GLboolean ke
     case VK_CONTROL:
         FG_KEY_EVENT(VK_LCONTROL,GLUT_KEY_CTRL_L,lControl);
         FG_KEY_EVENT(VK_RCONTROL,GLUT_KEY_CTRL_R,rControl);
+		fgState.Modifiers = fgPlatformGetModifiers( );
         break;
     case VK_SHIFT:
         FG_KEY_EVENT(VK_LSHIFT,GLUT_KEY_SHIFT_L,lShift);
         FG_KEY_EVENT(VK_RSHIFT,GLUT_KEY_SHIFT_R,rShift);
+		fgState.Modifiers = fgPlatformGetModifiers( );
         break;
     case VK_MENU:
         FG_KEY_EVENT(VK_LMENU,GLUT_KEY_ALT_L,lAlt);
         FG_KEY_EVENT(VK_RMENU,GLUT_KEY_ALT_R,rAlt);
+		fgState.Modifiers = fgPlatformGetModifiers( );
         break;
 #undef KEY_EVENT
 
@@ -731,8 +744,9 @@ static LRESULT fghWindowProcKeyPress(SFG_Window *window, UINT uMsg, GLboolean ke
 
     fgState.Modifiers = INVALID_MODIFIERS;
 
+	//eat VK_MENU 
     /* SYSKEY events should be sent to default window proc for system to handle them */
-    if (uMsg==WM_SYSKEYDOWN || uMsg==WM_SYSKEYUP)
+    if ((uMsg==WM_SYSKEYDOWN || uMsg==WM_SYSKEYUP) && wParam != VK_MENU)
         return DefWindowProc( window->Window.Handle, uMsg, wParam, lParam );
     else
         return 1;
@@ -1440,7 +1454,6 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 
 	//eating alt ( disable windows menu key. getmodifier VK_ALT)
     case WM_SYSKEYDOWN:
-		if (wParam == VK_MENU ) return 1;
     case WM_KEYDOWN:
     {
         window = fghWindowUnderCursor(window);
@@ -1449,7 +1462,6 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     break;
 
     case WM_SYSKEYUP:
-		if (wParam == VK_MENU ) return 1;
     case WM_KEYUP:
     {
         window = fghWindowUnderCursor(window);
