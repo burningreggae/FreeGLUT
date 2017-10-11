@@ -295,15 +295,16 @@ GLboolean fgSetupPixelFormat( SFG_Window* window, GLboolean checkOnly,
         HGLRC rc, rc_before=wglGetCurrentContext();
         HWND hWnd;
         HDC hDC, hDC_before=wglGetCurrentDC();
-        WNDCLASS wndCls;
+        WNDCLASSEX wndCls;
 
         /* create a dummy window */
         ZeroMemory(&wndCls, sizeof(wndCls));
+		wndCls.cbSize = sizeof(WNDCLASSEX);
         wndCls.lpfnWndProc = DefWindowProc;
         wndCls.hInstance = fgDisplay.pDisplay.Instance;
         wndCls.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
         wndCls.lpszClassName = _T("FREEGLUT_dummy");
-        RegisterClass( &wndCls );
+        RegisterClassEx( &wndCls );
 
         hWnd=CreateWindow(_T("FREEGLUT_dummy"), _T(""), WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW , 0,0,0,0, 0, 0, fgDisplay.pDisplay.Instance, 0 );
         hDC=GetDC(hWnd);
@@ -567,13 +568,13 @@ void fgPlatformOpenWindow( SFG_Window* window, const char* title,
                            GLboolean gameMode, GLboolean isSubWindow )
 {
 
-    WNDCLASS wc;
+    WNDCLASSEX wc;
     DWORD flags   = 0;
     DWORD exFlags = 0;
     BOOL atom;
 
     /* Grab the window class we have registered on glutInit(): */
-    atom = GetClassInfo( fgDisplay.pDisplay.Instance, _T("FREEGLUT"), &wc );
+    atom = GetClassInfoEx( fgDisplay.pDisplay.Instance, _T("FREEGLUT"), &wc );
     FREEGLUT_INTERNAL_ERROR_EXIT ( atom, "Window Class Info Not Found",
                                    "fgOpenWindow" );
 
