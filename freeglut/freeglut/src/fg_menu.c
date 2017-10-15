@@ -801,12 +801,14 @@ static void fghCreateMenuCallback( int menu, FGCBUserData userData )
 
 int FGAPIENTRY glutCreateMenu( FGCBMenu callback )
 {
+	FGCBMenu* reference;
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutCreateMenu" );
     if (!callback)
-	{
+    {
         return glutCreateMenuUcall( NULL, NULL );
-	}
-    return glutCreateMenuUcall( fghCreateMenuCallback, (FGCBUserData)callback );
+    }
+    reference = &callback;
+    return glutCreateMenuUcall( fghCreateMenuCallback, *((FGCBUserData*)reference) );
 }
 
 /*
