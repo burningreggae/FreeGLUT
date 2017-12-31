@@ -418,6 +418,7 @@ struct tagSFG_State
     FGCBUserData     ErrorFuncData;        /* User defined error handler user data */
     FGWarningUC      WarningFunc;          /* User defined warning handler  */
     FGCBUserData     WarningFuncData;      /* User defined warning handler user data */
+    GLboolean        DPIAware;             /* If true, on window the application will be declared DPI aware. No effect on other platoforms */
 };
 
 /* The structure used by display initialization in fg_init.c */
