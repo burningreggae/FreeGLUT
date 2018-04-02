@@ -1202,7 +1202,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			DragQueryFile(drop, i, path, pathsize);
 			path[pathsize]=0;
 			DragQueryPoint(drop,&p);
-			if ( fgState.DragAndDropCallback) fgState.DragAndDropCallback(i+1,nFile,path,p.x,p.y);
+			if ( fgState.DragAndDropCallback) fgState.DragAndDropCallback(i,nFile,path,p.x,p.y);
 		}
 		DragFinish(drop);
 	} break;
