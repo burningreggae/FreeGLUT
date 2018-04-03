@@ -565,8 +565,14 @@ void fgPlatformMainLoopPreliminaryWork ( void )
 }
 
 #if 1
-static unsigned char lControl = 0, lShift = 0, lAlt = 0,
-                     rControl = 0, rShift = 0, rAlt = 0;
+static int lControl = 0, lShift = 0, lAlt = 0;
+static int rControl = 0, rShift = 0, rAlt = 0;
+
+static void fgResetGetModifiers (void)
+{
+	lControl = 0; lShift = 0; lAlt = 0;
+	rControl = 0; rShift = 0; rAlt = 0;
+}
 
 static int fgPlatformGetModifiers (void)
 {
@@ -1109,6 +1115,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
             {
                 TRACKMOUSEEVENT tme;
 
+				fgResetGetModifiers();
                 /* Cursor just entered window, set cursor look */ 
                 fgSetCursor ( window, window->State.Cursor ) ;
 
@@ -1202,7 +1209,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			DragQueryFile(drop, i, path, pathsize);
 			path[pathsize]=0;
 			DragQueryPoint(drop,&p);
-			if ( fgState.DragAndDropCallback) fgState.DragAndDropCallback(i+1,nFile,path,p.x,p.y);
+			if ( fgState.DragAndDropCallback) fgState.DragAndDropCallback(i,nFile,path,p.x,p.y);
 		}
 		DragFinish(drop);
 	} break;
