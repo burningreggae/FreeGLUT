@@ -92,6 +92,8 @@
 
 #define  GLUT_ALLOW_NEGATIVE_WINDOW_POSITION 0x0207 /* GLUT doesn't allow negative window positions by default */
 
+#define  GLUT_WINDOW_SRGB                   0x007D
+
 #define  GLUT_MOUSEWHEEL0_NOTIFY_DELTA      0x0208 /* tweak wheel to notify on WHEEL_DELTA/delta */
 #define  GLUT_MOUSEWHEEL1_NOTIFY_DELTA      0x0209 /* tweak wheel to notify on WHEEL_DELTA/delta */
 
