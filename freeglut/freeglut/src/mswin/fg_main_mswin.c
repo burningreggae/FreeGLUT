@@ -564,7 +564,7 @@ void fgPlatformMainLoopPreliminaryWork ( void )
     /* no-op */
 }
 
-#if 1
+
 static int lControl = 0, lShift = 0, lAlt = 0;
 static int rControl = 0, rShift = 0, rAlt = 0;
 
@@ -581,11 +581,10 @@ static int fgPlatformGetModifiers (void)
 			((lAlt | rAlt) ? GLUT_ACTIVE_ALT : 0);
 }
 
-#else
 /*
  * Determine a GLUT modifier mask based on MS-WINDOWS system info.
  */
-static int fgPlatformGetModifiers (void)
+static int fgPlatformGetModifiers_org (void)
 {
     return
         ( ( ( GetKeyState( VK_LSHIFT   ) < 0 ) ||
@@ -595,7 +594,7 @@ static int fgPlatformGetModifiers (void)
         ( ( ( GetKeyState( VK_LMENU    ) < 0 ) ||
             ( GetKeyState( VK_RMENU    ) < 0 )) ? GLUT_ACTIVE_ALT   : 0 );
 }
-#endif
+
 
 /* Check whether a button (VK_*BUTTON) is currently depressed. Returns
  * non-zero (not necessarily 1) if yes. */
@@ -1204,6 +1203,9 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		static TCHAR path[32768];
 		int pathsize = sizeof(path)/sizeof(TCHAR)-1;
 		nFile = DragQueryFile(drop, 0xFFFFFFFF, NULL, 0);
+
+        fgState.Modifiers = fgPlatformGetModifiers_org();
+
 		for ( i = 0; i < nFile; ++i )
 		{
 			DragQueryFile(drop, i, path, pathsize);
