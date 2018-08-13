@@ -574,7 +574,7 @@ static void fgResetGetModifiers (void)
 	rControl = 0; rShift = 0; rAlt = 0;
 }
 
-static int fgPlatformGetModifiers (void)
+static int fgPlatformGetModifiers_new (void)
 {
     return  ((lControl | rControl) ? GLUT_ACTIVE_CTRL : 0) |
 			((lShift | rShift) ? GLUT_ACTIVE_SHIFT : 0) |
@@ -584,7 +584,7 @@ static int fgPlatformGetModifiers (void)
 /*
  * Determine a GLUT modifier mask based on MS-WINDOWS system info.
  */
-static int fgPlatformGetModifiers_org (void)
+static int fgPlatformGetModifiers (void)
 {
     return
         ( ( ( GetKeyState( VK_LSHIFT   ) < 0 ) ||
@@ -666,17 +666,17 @@ static LRESULT fghWindowProcKeyPress(SFG_Window *window, UINT uMsg, GLboolean ke
     case VK_CONTROL:
         FG_KEY_EVENT(VK_LCONTROL,GLUT_KEY_CTRL_L,lControl);
         FG_KEY_EVENT(VK_RCONTROL,GLUT_KEY_CTRL_R,rControl);
-		fgState.Modifiers = fgPlatformGetModifiers( );
+		//fgState.Modifiers = fgPlatformGetModifiers( );
         break;
     case VK_SHIFT:
         FG_KEY_EVENT(VK_LSHIFT,GLUT_KEY_SHIFT_L,lShift);
         FG_KEY_EVENT(VK_RSHIFT,GLUT_KEY_SHIFT_R,rShift);
-		fgState.Modifiers = fgPlatformGetModifiers( );
+		//fgState.Modifiers = fgPlatformGetModifiers( );
         break;
     case VK_MENU:
         FG_KEY_EVENT(VK_LMENU,GLUT_KEY_ALT_L,lAlt);
         FG_KEY_EVENT(VK_RMENU,GLUT_KEY_ALT_R,rAlt);
-		fgState.Modifiers = fgPlatformGetModifiers( );
+		//fgState.Modifiers = fgPlatformGetModifiers( );
         break;
 #undef KEY_EVENT
 
@@ -1204,7 +1204,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		int pathsize = sizeof(path)/sizeof(TCHAR)-1;
 		nFile = DragQueryFile(drop, 0xFFFFFFFF, NULL, 0);
 
-        fgState.Modifiers = fgPlatformGetModifiers_org();
+        fgState.Modifiers = fgPlatformGetModifiers();
 
 		for ( i = 0; i < nFile; ++i )
 		{
