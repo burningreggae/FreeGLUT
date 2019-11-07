@@ -37,7 +37,7 @@
  * teasetorig.gz archive, along with the original control points:
 
  From pjs@decpa.pa.dec.com Tue Feb 13 18:39:22 1990
- Received: from decpa.pa.dec.com by tut.fi; id AA06392; Tue, 13 Feb 90 18:38:31 +0200 
+ Received: from decpa.pa.dec.com by tut.fi; id AA06392; Tue, 13 Feb 90 18:38:31 +0200
  Received: by decpa.pa.dec.com; id AA00959; Tue, 13 Feb 90 08:38:32 -0800
  Received: by basalt.pa.dec.com; id AA08467; Tue, 13 Feb 90 08:32:37 -0800
  Received: by bezier.pa.dec.com (5.57/Ultrix3.0-C)

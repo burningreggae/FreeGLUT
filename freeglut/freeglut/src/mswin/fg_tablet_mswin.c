@@ -17,7 +17,7 @@
 #define PACKETTOUCHRING		PKEXT_ABSOLUTE
 #include "pktdef.h"
 
-// Function pointers to Wintab functions exported from wintab32.dll. 
+// Function pointers to Wintab functions exported from wintab32.dll.
 typedef UINT ( API * WTINFOA ) ( UINT, UINT, LPVOID );
 typedef HCTX ( API * WTOPENA )( HWND, LPLOGCONTEXTA, BOOL );
 typedef BOOL ( API * WTGETA ) ( HCTX, LPLOGCONTEXT );
@@ -209,7 +209,7 @@ HCTX TabletInit(HWND hWnd)
 	glogContext.lcInExtX = TabletX.axMax;
 	glogContext.lcInExtY = TabletY.axMax;
 
-	// Guarantee the output coordinate space to be in screen coordinates.  
+	// Guarantee the output coordinate space to be in screen coordinates.
 	glogContext.lcOutOrgX = GetSystemMetrics( SM_XVIRTUALSCREEN );
 	glogContext.lcOutOrgY = GetSystemMetrics( SM_YVIRTUALSCREEN );
 	glogContext.lcOutExtX = GetSystemMetrics( SM_CXVIRTUALSCREEN ); //SM_CXSCREEN );
@@ -222,8 +222,8 @@ HCTX TabletInit(HWND hWnd)
 	// lcSysOrgX, lcSysOrgY, lcSysExtX, lcSysExtY
 #endif
 	// open the region
-	// The Wintab spec says we must open the context disabled if we are 
-	// using cursor masks.  
+	// The Wintab spec says we must open the context disabled if we are
+	// using cursor masks.
 	hctx = gpWTOpenA( hWnd, &glogContext,TRUE );
 
 
@@ -320,7 +320,7 @@ void fgTabletHandleWinEvent(SFG_Window *window,HWND hwnd, UINT uMsg,WPARAM wPara
 	case WM_ACTIVATE:
 		/* if switching in the middle, disable the region */
 		//if ( 0 == hCtx ) fgPlatformInitializeTablet();
-		if (hCtx && gpWTEnable) 
+		if (hCtx && gpWTEnable)
 		{
 			gpWTEnable(hCtx, GET_WM_ACTIVATE_STATE(wParam, lParam));
 			if (hCtx && GET_WM_ACTIVATE_STATE(wParam, lParam))

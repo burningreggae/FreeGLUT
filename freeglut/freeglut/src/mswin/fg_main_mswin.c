@@ -64,7 +64,7 @@ struct GXKeyList gxKeyList;
 #endif /* _WIN32_WCE */
 
 #ifdef _DEBUG
-/* 
+/*
  * WM_ message to string, for debugging
  * This is taken from the 8.0 SDK, so Windows 8 API and everything earlier is included
  */
@@ -475,7 +475,7 @@ fg_time_t fgPlatformSystemTime ( void )
     /* Check if we just wrapped */
     if (currTime32 < lastTime32)
         timeEpoch++;
-    
+
     lastTime32 = currTime32;
 
     return currTime32 | timeEpoch << 32;
@@ -543,7 +543,7 @@ static void fghPlatformOnWindowStatusNotify(SFG_Window *window, GLboolean visSta
     {
         SFG_Window *saved_window = fgStructure.CurrentWindow;
 
-        /* On win32 we only have two states, window displayed and window not displayed (iconified) 
+        /* On win32 we only have two states, window displayed and window not displayed (iconified)
          * We map these to GLUT_FULLY_RETAINED and GLUT_HIDDEN respectively.
          */
         INVOKE_WCB( *window, WindowStatus, ( visState ? GLUT_FULLY_RETAINED:GLUT_HIDDEN ) );
@@ -608,7 +608,7 @@ static LRESULT fghWindowProcKeyPress(SFG_Window *window, UINT uMsg, GLboolean ke
 {
 
     int keypress = -1;
-    
+
     /* if keydown, check for repeat */
     /* If repeat is globally switched off, it cannot be switched back on per window.
      * But if it is globally switched on, it can be switched off per window. This matches
@@ -617,7 +617,7 @@ static LRESULT fghWindowProcKeyPress(SFG_Window *window, UINT uMsg, GLboolean ke
      */
     if( keydown && ( fgState.KeyRepeat==GLUT_KEY_REPEAT_OFF || window->State.IgnoreKeyRepeat==GL_TRUE ) && (HIWORD(lParam) & KF_REPEAT) )
         return 1;
-    
+
     /* Remember the current modifiers state so user can query it from their callback */
     fgState.Modifiers = fgPlatformGetModifiers( );
 
@@ -734,7 +734,7 @@ static LRESULT fghWindowProcKeyPress(SFG_Window *window, UINT uMsg, GLboolean ke
             keypress = GLUT_KEY_F4;
     }
 #endif
-    
+
     if( keypress != -1 )
         if (keydown)
             INVOKE_WCB( *window, Special,
@@ -749,7 +749,7 @@ static LRESULT fghWindowProcKeyPress(SFG_Window *window, UINT uMsg, GLboolean ke
 
     fgState.Modifiers = INVALID_MODIFIERS;
 
-	//eat VK_MENU 
+	//eat VK_MENU
     /* SYSKEY events should be sent to default window proc for system to handle them */
     if ((uMsg==WM_SYSKEYDOWN || uMsg==WM_SYSKEYUP) && wParam != VK_MENU)
         return DefWindowProc( window->Window.Handle, uMsg, wParam, lParam );
@@ -776,7 +776,7 @@ SFG_Window* fghWindowUnderCursor(SFG_Window *window)
         mouse_pos.x = GET_X_LPARAM(mouse_pos_dw);
         mouse_pos.y = GET_Y_LPARAM(mouse_pos_dw);
         ScreenToClient( window->Window.Handle, &mouse_pos );
-        
+
         hwnd = ChildWindowFromPoint(window->Window.Handle, mouse_pos);
         if (hwnd && hwnd!=window->Window.Handle)   /* can be NULL if mouse outside parent by the time we get here, or can be same as parent if we didn't find a child */
         {
@@ -961,7 +961,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
             width  = LOWORD(lParam);
             height = HIWORD(lParam);
 #endif /* defined(_WIN32_WCE) */
-            
+
             /* Update state and call callback, if there was a change */
             fghOnReshapeNotify(window, width, height, GL_FALSE);
         }
@@ -1008,15 +1008,15 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
             if (!IsIconic(window->Window.Handle))
             {
                 RECT windowRect;
-                
+
                 /* lParam contains coordinates of top-left of client area.
                  * Get top-left of non-client area of window, matching coordinates of
-                 * glutInitPosition and glutPositionWindow, but not those of 
+                 * glutInitPosition and glutPositionWindow, but not those of
                  * glutGet(GLUT_WINDOW_X) and glutGet(GLUT_WINDOW_Y), which return
                  * top-left of client area.
                  */
                 GetWindowRect( window->Window.Handle, &windowRect );
-            
+
                 if (window->Parent)
                 {
                     /* For child window, we should return relative to upper-left
@@ -1115,7 +1115,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
                 TRACKMOUSEEVENT tme;
 
 				fgResetGetModifiers();
-                /* Cursor just entered window, set cursor look */ 
+                /* Cursor just entered window, set cursor look */
                 fgSetCursor ( window, window->State.Cursor ) ;
 
                 /* If an EntryFunc callback is specified by the user, also
@@ -1174,7 +1174,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
     case WM_PAINT:
     {
         RECT rect;
-        
+
         /* As per docs, upon receiving WM_PAINT, first check if the update region is not empty before you call BeginPaint */
         if (GetUpdateRect(hWnd,&rect,FALSE))
         {
@@ -1388,7 +1388,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
         int wheel_number = uMsg == WM_MOUSEWHEEL ? 0 : 1;   /* two scroll wheels on windows */
 		int notify_delta = WHEEL_DELTA;
 #if defined(_WIN32_WCE)
-        int modkeys = LOWORD(wParam); 
+        int modkeys = LOWORD(wParam);
         short ticks = (short)HIWORD(wParam);
         /* commented out as should not be needed here, mouse motion is processed in WM_MOUSEMOVE first:
         xPos = LOWORD(lParam);  -- straight from docs, not consistent with mouse nutton and mouse motion above (which i think is wrong)
@@ -1404,7 +1404,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 #endif /* defined(_WIN32_WCE) */
 
         window = fghWindowUnderCursor(window);
-		
+
 		if (fgState.MouseWheelNotifyDelta[wheel_number]>1) notify_delta /= fgState.MouseWheelNotifyDelta[wheel_number];
 
 		fgState.MouseWheelTicks[wheel_number] += ticks;
@@ -1622,7 +1622,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 		    fghCloseTouchInputHandle = (pCloseTouchInputHandle)GetProcAddress(GetModuleHandle("user32"),"CloseTouchInputHandle");
 		}
 
-		if (!fghGetTouchInputInfo) { 
+		if (!fghGetTouchInputInfo) {
 			free( (void*)ti );
 			break;
 		}
@@ -1643,7 +1643,7 @@ LRESULT CALLBACK fgPlatformWindowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 					INVOKE_WCB( *window, MultiButton, ( ti[i].dwID, tp.x, tp.y, 0, GLUT_DOWN ) );
 				} else if (ti[i].dwFlags & TOUCHEVENTF_MOVE) {
 					INVOKE_WCB( *window, MultiMotion, ( ti[i].dwID, tp.x, tp.y ) );
-				} else if (ti[i].dwFlags & TOUCHEVENTF_UP)   { 
+				} else if (ti[i].dwFlags & TOUCHEVENTF_UP)   {
 					INVOKE_WCB( *window, MultiButton, ( ti[i].dwID, tp.x, tp.y, 0, GLUT_UP ) );
 					INVOKE_WCB( *window, MultiEntry,  ( ti[i].dwID, GLUT_LEFT ) );
 				}
@@ -1728,7 +1728,7 @@ void fgPlatformPosResZordWork(SFG_Window* window, unsigned int workMask)
                 window->State.DesiredWidth  = window->State.pWState.OldRect.right  - window->State.pWState.OldRect.left;
                 window->State.DesiredHeight = window->State.pWState.OldRect.bottom - window->State.pWState.OldRect.top;
             }
-                
+
             /* We'll finish off the fullscreen operation below after the other GLUT_POSITION_WORK|GLUT_SIZE_WORK|GLUT_ZORDER_WORK */
         }
         else
@@ -1788,7 +1788,7 @@ void fgPlatformPosResZordWork(SFG_Window* window, unsigned int workMask)
 
     /* Now deal with normal position, reshape and z order requests (some might have been set when handling GLUT_FULLSCREEN_WORK above */
     {
-        /* get rect describing window's current position and size, 
+        /* get rect describing window's current position and size,
             * in screen coordinates and in FreeGLUT format
             * (size (right-left, bottom-top) is client area size, top and left
             * are outside of window including decorations).
@@ -1798,7 +1798,7 @@ void fgPlatformPosResZordWork(SFG_Window* window, unsigned int workMask)
         if (workMask & GLUT_POSITION_WORK)
         {
             flags &= ~SWP_NOMOVE;
-                
+
             /* Move rect so that top-left is at requested position */
             /* This also automatically makes sure that child window requested coordinates are relative
                 * to top-left of parent's client area (needed input for SetWindowPos on child windows),
@@ -1809,7 +1809,7 @@ void fgPlatformPosResZordWork(SFG_Window* window, unsigned int workMask)
         if (workMask & GLUT_SIZE_WORK)
         {
             flags &= ~SWP_NOSIZE;
-                
+
             /* Note on maximizing behavior of Windows: the resize borders are off
                 * the screen such that the client area extends all the way from the
                 * leftmost corner to the rightmost corner to maximize screen real
@@ -1844,7 +1844,7 @@ void fgPlatformPosResZordWork(SFG_Window* window, unsigned int workMask)
     if (!window->Parent)
         /* get the window rect from this to feed to SetWindowPos, correct for window decorations */
         fghComputeWindowRectFromClientArea_QueryWindow(&clientRect,window,TRUE);
-    
+
     /* Do the requested positioning, moving, and z order push/pop. */
     SetWindowPos( window->Window.Handle,
                     insertAfter,

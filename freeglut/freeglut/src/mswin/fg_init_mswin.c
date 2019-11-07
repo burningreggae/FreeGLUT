@@ -67,7 +67,7 @@ void fgPlatformInitialize( const char* displayName )
         //wc.hIcon          = LoadIcon( fgDisplay.pDisplay.Instance, _T("GLUT_ICON") );
 		wc.hIcon = (HICON) LoadImage(fgDisplay.pDisplay.Instance,_T("GLUT_ICON"),IMAGE_ICON,GetSystemMetrics(SM_CXICON),GetSystemMetrics(SM_CYICON),0);
 		wc.hIconSm = (HICON) LoadImage(fgDisplay.pDisplay.Instance,_T("GLUT_ICON"),IMAGE_ICON,GetSystemMetrics(SM_CXSMICON),GetSystemMetrics(SM_CYSMICON),0);
-  
+
 
 #if defined(_WIN32_WCE)
         wc.style          = CS_HREDRAW | CS_VREDRAW;

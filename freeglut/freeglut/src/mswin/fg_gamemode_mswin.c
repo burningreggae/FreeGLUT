@@ -48,15 +48,15 @@ GLboolean fghChangeDisplayMode(GLboolean haveToTest, DEVMODE *devModeRequested)
      * - dmDisplayFrequency
      */
     if (devModeCurrent.dmPelsWidth       ==devModeRequested->dmPelsWidth &&
-        devModeCurrent.dmPelsHeight      ==devModeRequested->dmPelsHeight && 
-        devModeCurrent.dmBitsPerPel      ==devModeRequested->dmBitsPerPel && 
+        devModeCurrent.dmPelsHeight      ==devModeRequested->dmPelsHeight &&
+        devModeCurrent.dmBitsPerPel      ==devModeRequested->dmBitsPerPel &&
         devModeCurrent.dmDisplayFrequency==devModeRequested->dmDisplayFrequency)
     {
         if (!haveToTest)
         {
             /* update vars in case if actual switch was requested */
             EnumDisplaySettings( fgDisplay.pDisplay.DisplayName, ENUM_CURRENT_SETTINGS, &devModeCurrent );
-            fgState.GameModeSize.X  = devModeCurrent.dmPelsWidth;        
+            fgState.GameModeSize.X  = devModeCurrent.dmPelsWidth;
             fgState.GameModeSize.Y  = devModeCurrent.dmPelsHeight;
             fgState.GameModeDepth   = devModeCurrent.dmBitsPerPel;
             fgState.GameModeRefresh = devModeCurrent.dmDisplayFrequency;
@@ -77,7 +77,7 @@ GLboolean fghChangeDisplayMode(GLboolean haveToTest, DEVMODE *devModeRequested)
         {
             /* update vars in case if windows switched to proper mode */
             EnumDisplaySettings( fgDisplay.pDisplay.DisplayName, ENUM_CURRENT_SETTINGS, &devModeCurrent );
-            fgState.GameModeSize.X  = devModeCurrent.dmPelsWidth;        
+            fgState.GameModeSize.X  = devModeCurrent.dmPelsWidth;
             fgState.GameModeSize.Y  = devModeCurrent.dmPelsHeight;
             fgState.GameModeDepth   = devModeCurrent.dmBitsPerPel;
             fgState.GameModeRefresh = devModeCurrent.dmDisplayFrequency;
@@ -112,7 +112,7 @@ GLboolean fghChangeDisplayMode(GLboolean haveToTest, DEVMODE *devModeRequested)
         sprintf(displayMode,"%s Problem with requested mode: %lux%lu:%lu@%lu", fggmstr, devModeRequested->dmPelsWidth, devModeRequested->dmPelsHeight, devModeRequested->dmBitsPerPel, devModeRequested->dmDisplayFrequency);
         fgWarning(displayMode);
     }
-    
+
     return success;
 }
 
@@ -152,7 +152,7 @@ GLboolean fgPlatformChangeDisplayMode( GLboolean haveToTest )
     DEVMODE  devMode;
 
     /* Get current display mode */
-    EnumDisplaySettings( fgDisplay.pDisplay.DisplayName, ENUM_CURRENT_SETTINGS, &devMode ); 
+    EnumDisplaySettings( fgDisplay.pDisplay.DisplayName, ENUM_CURRENT_SETTINGS, &devMode );
     devMode.dmFields = 0;
 
     if (fgState.GameModeSize.X!=-1)
@@ -179,10 +179,10 @@ GLboolean fgPlatformChangeDisplayMode( GLboolean haveToTest )
     return fghChangeDisplayMode(haveToTest, &devMode);
 }
 
-void fgPlatformEnterGameMode( void ) 
+void fgPlatformEnterGameMode( void )
 {
 }
 
-void fgPlatformLeaveGameMode( void ) 
+void fgPlatformLeaveGameMode( void )
 {
 }

@@ -68,7 +68,7 @@ struct tagSFG_PlatformDisplay
 {
     HINSTANCE       Instance;           /* The application's instance */
     DEVMODE         DisplayMode;        /* Desktop's display settings */
-    char           *DisplayName;        /* Display name for multi display support*/ 
+    char           *DisplayName;        /* Display name for multi display support*/
 };
 
 /*

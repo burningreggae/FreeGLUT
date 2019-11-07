@@ -79,11 +79,11 @@ static void fghDrawNormalVisualization20(GLint attribute_v_coord);
  *     issuing one draw call per face. glDrawArrays is always used as no
  *     triangle decomposition is needed to draw faces. We use the "first"
  *     parameter in glDrawArrays to go from face to face.
- * 
+ *
  * Non-polyhedra:
  *   - We have implemented the sphere, cylinder, cone and torus.
  *   - All shapes are characterized by two parameters: the number of
- *     subdivisions along two axes used to construct the shape's vertices 
+ *     subdivisions along two axes used to construct the shape's vertices
  *     (e.g. stacks and slices for the sphere).
  *     As different subdivisions are most suitable for different shapes,
  *     and are thus also named differently, I wont provide general comments
@@ -91,7 +91,7 @@ static void fghDrawNormalVisualization20(GLint attribute_v_coord);
  *   - Solids are drawn using glDrawArrays and GL_TRIANGLE_STRIP. Each
  *     strip covers one revolution around one of the two subdivision axes
  *     of the shape.
- *   - WireFrame drawing is done for the subdivisions along the two axes 
+ *   - WireFrame drawing is done for the subdivisions along the two axes
  *     separately, usually using GL_LINE_LOOP. Vertex index arrays are
  *     built containing the vertices to be drawn for each loop, which are
  *     then drawn using multiple calls to glDrawElements. As the number of
@@ -217,14 +217,14 @@ static void fghDrawGeometryWire11(GLfloat *vertices, GLfloat *normals,
     )
 {
     int i;
-    
+
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
 
     glVertexPointer(3, GL_FLOAT, 0, vertices);
     glNormalPointer(GL_FLOAT, 0, normals);
 
-    
+
     if (!vertIdxs)
         /* Draw per face (TODO: could use glMultiDrawArrays if available) */
         for (i=0; i<numParts; i++)
@@ -292,14 +292,14 @@ static void fghDrawGeometryWire20(GLfloat *vertices, GLfloat *normals, GLsizei n
         fghBufferData(FGH_ARRAY_BUFFER, numVertices * 3 * sizeof(vertices[0]),
                       vertices, FGH_STATIC_DRAW);
     }
-    
+
     if (numVertices > 0 && attribute_v_normal != -1) {
         fghGenBuffers(1, &vbo_normals);
         fghBindBuffer(FGH_ARRAY_BUFFER, vbo_normals);
         fghBufferData(FGH_ARRAY_BUFFER, numVertices * 3 * sizeof(normals[0]),
                       normals, FGH_STATIC_DRAW);
     }
-    
+
     if (vertIdxs != NULL) {
         fghGenBuffers(1, &ibo_elements);
         fghBindBuffer(FGH_ELEMENT_ARRAY_BUFFER, ibo_elements);
@@ -367,12 +367,12 @@ static void fghDrawGeometryWire20(GLfloat *vertices, GLfloat *normals, GLsizei n
         /* Android showed instability otherwise */
         fghBindBuffer(FGH_ELEMENT_ARRAY_BUFFER, 0);
     }
-    
+
     if (vbo_coords != 0)
         fghDisableVertexAttribArray(attribute_v_coord);
     if (vbo_normals != 0)
         fghDisableVertexAttribArray(attribute_v_normal);
-    
+
     if (vbo_coords != 0)
         fghDeleteBuffers(1, &vbo_coords);
     if (vbo_normals != 0)
@@ -394,7 +394,7 @@ static void fghDrawGeometrySolid20(GLfloat *vertices, GLfloat *normals, GLfloat 
     GLuint vbo_coords = 0, vbo_normals = 0, vbo_textcs = 0, ibo_elements = 0;
     GLsizei numVertIdxs = numParts * numVertIdxsPerPart;
     int i;
-  
+
     if (numVertices > 0 && attribute_v_coord != -1) {
         fghGenBuffers(1, &vbo_coords);
         fghBindBuffer(FGH_ARRAY_BUFFER, vbo_coords);
@@ -402,7 +402,7 @@ static void fghDrawGeometrySolid20(GLfloat *vertices, GLfloat *normals, GLfloat 
                       vertices, FGH_STATIC_DRAW);
         fghBindBuffer(FGH_ARRAY_BUFFER, 0);
     }
-    
+
     if (numVertices > 0 && attribute_v_normal != -1) {
         fghGenBuffers(1, &vbo_normals);
         fghBindBuffer(FGH_ARRAY_BUFFER, vbo_normals);
@@ -418,7 +418,7 @@ static void fghDrawGeometrySolid20(GLfloat *vertices, GLfloat *normals, GLfloat 
                       textcs, FGH_STATIC_DRAW);
         fghBindBuffer(FGH_ARRAY_BUFFER, 0);
     }
-    
+
     if (vertIdxs != NULL) {
         fghGenBuffers(1, &ibo_elements);
         fghBindBuffer(FGH_ELEMENT_ARRAY_BUFFER, ibo_elements);
@@ -426,7 +426,7 @@ static void fghDrawGeometrySolid20(GLfloat *vertices, GLfloat *normals, GLfloat 
                       vertIdxs, FGH_STATIC_DRAW);
         fghBindBuffer(FGH_ELEMENT_ARRAY_BUFFER, 0);
     }
-    
+
     if (vbo_coords) {
         fghEnableVertexAttribArray(attribute_v_coord);
         fghBindBuffer(FGH_ARRAY_BUFFER, vbo_coords);
@@ -440,7 +440,7 @@ static void fghDrawGeometrySolid20(GLfloat *vertices, GLfloat *normals, GLfloat 
         );
         fghBindBuffer(FGH_ARRAY_BUFFER, 0);
     };
-    
+
     if (vbo_normals) {
         fghEnableVertexAttribArray(attribute_v_normal);
         fghBindBuffer(FGH_ARRAY_BUFFER, vbo_normals);
@@ -468,7 +468,7 @@ static void fghDrawGeometrySolid20(GLfloat *vertices, GLfloat *normals, GLfloat 
             );
         fghBindBuffer(FGH_ARRAY_BUFFER, 0);
     };
-    
+
     if (vertIdxs == NULL) {
         glDrawArrays(GL_TRIANGLES, 0, numVertices);
     } else {
@@ -484,14 +484,14 @@ static void fghDrawGeometrySolid20(GLfloat *vertices, GLfloat *normals, GLfloat 
         /* Android showed instability otherwise */
         fghBindBuffer(FGH_ELEMENT_ARRAY_BUFFER, 0);
     }
-    
+
     if (vbo_coords != 0)
         fghDisableVertexAttribArray(attribute_v_coord);
     if (vbo_normals != 0)
         fghDisableVertexAttribArray(attribute_v_normal);
     if (vbo_textcs != 0)
         fghDisableVertexAttribArray(attribute_v_texture);
-    
+
     if (vbo_coords != 0)
         fghDeleteBuffers(1, &vbo_coords);
     if (vbo_normals != 0)
@@ -778,26 +778,26 @@ static GLfloat dodecahedron_n[DODECAHEDRON_NUM_FACES*3] =
 
      0.525731112119f,  0.850650808354f,             0.0f,
      0.525731112119f, -0.850650808354f,             0.0f,
-    -0.525731112119f,  0.850650808354f,             0.0f, 
+    -0.525731112119f,  0.850650808354f,             0.0f,
     -0.525731112119f, -0.850650808354f,             0.0f,
 };
 
 /* Vertex indices */
 static GLubyte dodecahedron_vi[DODECAHEDRON_VERT_PER_OBJ] =
 {
-     0,  1,  2,  3,  4, 
-     5,  6,  7,  8,  9, 
-    10, 11,  3,  2, 12, 
-    13, 14,  8,  7, 15, 
+     0,  1,  2,  3,  4,
+     5,  6,  7,  8,  9,
+    10, 11,  3,  2, 12,
+    13, 14,  8,  7, 15,
 
-     3, 11, 16, 17,  4, 
-     2,  1, 18, 19, 12, 
-     7,  6, 17, 16, 15, 
-     8, 14, 19, 18,  9, 
+     3, 11, 16, 17,  4,
+     2,  1, 18, 19, 12,
+     7,  6, 17, 16, 15,
+     8, 14, 19, 18,  9,
 
-    17,  6,  5,  0,  4, 
-    16, 11, 10, 13, 15, 
-    18,  1,  0,  5,  9, 
+    17,  6,  5,  0,  4,
+    16, 11, 10, 13, 15,
+    18,  1,  0,  5,  9,
     19, 14, 13, 10, 12
 };
 DECLARE_SHAPE_CACHE_DECOMPOSE_TO_TRIANGLE(dodecahedron,Dodecahedron,DODECAHEDRON)
@@ -877,7 +877,7 @@ static GLubyte icosahedron_vi[ICOSAHEDRON_VERT_PER_OBJ] =
     11,  8,  9 ,
     11,  7,  8 ,
     11,  6,  7 ,
-    11, 10,  6 
+    11, 10,  6
 };
 DECLARE_SHAPE_CACHE(icosahedron,Icosahedron,ICOSAHEDRON)
 
@@ -1104,7 +1104,7 @@ static void fghSierpinskiSpongeGenerate ( int numLevels, double offset[3], GLflo
 static void fghCircleTable(GLfloat **sint, GLfloat **cost, const int n, const GLboolean halfCircle)
 {
     int i;
-    
+
     /* Table size, the sign of n flips the circle direction */
     const int size = abs(n);
 
@@ -1133,7 +1133,7 @@ static void fghCircleTable(GLfloat **sint, GLfloat **cost, const int n, const GL
         (*cost)[i] = (GLfloat)cos(angle*i);
     }
 
-    
+
     if (halfCircle)
     {
         (*sint)[size] =  0.0f;  /* sin PI */
@@ -1608,7 +1608,7 @@ static void fghSphere( GLfloat radius, GLint slices, GLint stacks, GLboolean use
 
     /* Generate vertices and normals */
     fghGenerateSphere(radius,slices,stacks,&vertices,&normals,&nVert);
-    
+
     if (nVert==0)
         /* nothing to draw */
         return;
@@ -1656,7 +1656,7 @@ static void fghSphere( GLfloat radius, GLint slices, GLint stacks, GLboolean use
         fghDrawGeometryWire(vertices,normals,nVert,
             sliceIdx,slices,stacks+1,GL_LINE_STRIP,
             stackIdx,stacks-1,slices);
-        
+
         /* cleanup allocated memory */
         free(sliceIdx);
         free(stackIdx);
@@ -1720,7 +1720,7 @@ static void fghSphere( GLfloat radius, GLint slices, GLint stacks, GLboolean use
         /* cleanup allocated memory */
         free(stripIdx);
     }
-    
+
     /* cleanup allocated memory */
     free(vertices);
     free(normals);
@@ -2001,7 +2001,7 @@ static void fghTorus( GLfloat dInnerRadius, GLfloat dOuterRadius, GLint nSides, 
         fghDrawGeometryWire(vertices,normals,nVert,
             ringIdx,nRings,nSides,GL_LINE_LOOP,
             sideIdx,nSides,nRings);
-        
+
         /* cleanup allocated memory */
         free(sideIdx);
         free(ringIdx);
@@ -2072,7 +2072,7 @@ void FGAPIENTRY glutWireSphere(double radius, GLint slices, GLint stacks)
 {
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutWireSphere" );
     fghSphere((GLfloat)radius, slices, stacks, GL_TRUE );
-    
+
 }
 
 /*

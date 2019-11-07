@@ -187,7 +187,7 @@ int FGAPIENTRY glutCreateWindow( const char* title )
      */
     FREEGLUT_EXIT_IF_NOT_INITIALISED ( "glutCreateWindow" );
 
-    return fgCreateWindow( NULL, title, 
+    return fgCreateWindow( NULL, title,
                            fgState.Position.Use, fgState.Position.X, fgState.Position.Y,
                            fgState.Size.Use, fgState.Size.X, fgState.Size.Y,
                            GL_FALSE, GL_FALSE )->ID;
@@ -246,9 +246,9 @@ int FGAPIENTRY glutCreateSubWindow( int parentID, int x, int y, int w, int h )
         }
     }
 
-    window = fgCreateWindow( parent, "", 
-                             GL_TRUE, x, y, 
-                             GL_TRUE, w, h, 
+    window = fgCreateWindow( parent, "",
+                             GL_TRUE, x, y,
+                             GL_TRUE, w, h,
                              GL_FALSE, GL_FALSE );
     ret = window->ID;
 
